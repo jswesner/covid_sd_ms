@@ -277,7 +277,7 @@ newrestfit <- tibble(date_num = seq(0, max(cum_hosp$date_num, by = 1)),
 
 fit_rest <- fitted(fit_weib_group_f, newdata = newrestfit, probs = c(0.025, 0.25, 0.75, 0.975)) %>% as_tibble() %>% clean_names() %>% 
   mutate(date_num = newrestfit$date_num,
-         group = "Oustide of Minnehaha",
+         group = "Outside of Minnehaha",
          prior_post = "Posterior",
          method = "Fitted", 
          model = "Model 2")
@@ -287,7 +287,7 @@ newrestpred <- tibble(date_num = seq(max(cum_hosp$date_num), 200, by = 1),
 
 pred_rest <- predict(fit_weib_group_f, newdata = newrestpred, probs = c(0.025, 0.25, 0.75, 0.975)) %>% as_tibble() %>% clean_names() %>% 
   mutate(date_num = newrestpred$date_num,
-         group = "Oustide of Minnehaha",
+         group = "Outside of Minnehaha",
          prior_post = "Posterior",
          method = "Predicted", 
          model = "Model 2")
@@ -339,7 +339,7 @@ group_by(date_num, key) %>%
             q25 = quantile(value, probs = 0.25),
             q75 = quantile(value, probs = 0.75),
             q97_5 = quantile(value, probs = 0.975)) %>% 
-  mutate(group = case_when(grepl("rest", key) ~ "Oustide of Minnehaha", TRUE ~ "Minnehaha County"),
+  mutate(group = case_when(grepl("rest", key) ~ "Outside of Minnehaha", TRUE ~ "Minnehaha County"),
          prior_post = "Prior",
          method = case_when(grepl("fit", key) ~ "Fitted", TRUE ~ "Predicted"),
          model = "Model 2",
@@ -469,7 +469,7 @@ param_time_plot <- posts_methods %>%
   facet_grid(parameter ~ group, scales = "free") +
   scale_fill_brewer(type = "qual") +
   # labs(y = "Parameter value") +
-  # scale_x_continuous(breaks = c(0, 20, 40, 60, 80, 100)) + 
+  # scale_x_continuous(breaks = c(0, 20, 40, 60, 80, 100, 120)) + 
   theme_bw() +
   labs(y = "Parameter value",
        x = "Days after first hospitalization") +
