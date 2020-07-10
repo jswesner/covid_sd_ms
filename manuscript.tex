@@ -36,7 +36,7 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
 \hypersetup{
-  pdftitle={Forecasting hospitalizations due to COVID-19 in South Dakota},
+  pdftitle={Forecasting hospitalizations due to COVID-19 in South Dakota, USA.},
   hidelinks,
   pdfcreator={LaTeX via pandoc}}
 \urlstyle{same} % disable monospaced font for URLs
@@ -83,14 +83,14 @@
 \usepackage{makecell}
 \usepackage{xcolor}
 
-\title{Forecasting hospitalizations due to COVID-19 in South Dakota}
+\title{Forecasting hospitalizations due to COVID-19 in South Dakota, USA.}
 \author{}
 \date{\vspace{-2.5em}}
 
 \begin{document}
 \maketitle
 
-\emph{Jeff S. Wesner}\textsuperscript{1}, \emph{Dan Van Peursem}\textsuperscript{2}, \emph{Jose D. Flores}\textsuperscript{2,3}, \emph{Yuhlong Lio}\textsuperscript{2}, \emph{Chelsea A. Wesner}\textsuperscript{3}
+\emph{Jeff S. Wesner}\textsuperscript{1}, \emph{Dan Van Peursem}\textsuperscript{2}, \emph{José D. Flores}\textsuperscript{2,3}, \emph{Yuhlong Lio}\textsuperscript{2}, \emph{Chelsea A. Wesner}\textsuperscript{3}
 
 University of South Dakota
 
@@ -98,12 +98,12 @@ University of South Dakota
 
 \href{mailto:Jeff.Wesner@usd.edu}{\nolinkurl{Jeff.Wesner@usd.edu}}
 
-Keywords: \emph{Bayesian, Weibull, COVID-19, SARS-Cov-2, Hospitalizations}
+Keywords: \emph{Bayesian, COVID-19, Hospitalizations, SARS-CoV-2, Weibull}
 
 \hypertarget{abstract}{%
 \section{Abstract}\label{abstract}}
 
-Anticipating the number of hospital beds needed for patients with COVID-19 remains a challenge. Early efforts to predict hospital bed needs focused on deriving predictions from SIR models, largely at the level of countries, provinces, or states. In the United States, these models rely on data reported by state health agencies. However, predictive disease and hospitalization dynamics at the state level is complicated by geographic variation in disease parameters. In addition it is difficult to make forecasts early in a pandemic due to minimal data. However, Bayesian approaches that allow models to be specified with informed prior information from areas that have already completed a disease curve can serve as prior estimates for areas that are beginning their curve. Here, a Bayesian non-linear regression (Weibull function) was used to forecast cumulative and active COVID-19 hospitalizations for South Dakota, USA. As expected, early forecasts were dominated by prior information, which was derived from New York City. Importantly, hospitalization trends also differed within South Dakota due to early peaks in urban Minnehaha County, followed by later peaks in other rural areas of the state. Combining these trends in an interaction model led to altered forecasts with relevant policy implications.
+Anticipating the number of hospital beds needed for patients with COVID-19 remains a challenge. Early efforts to predict hospital bed needs focused on deriving predictions from SIR models, largely at the level of countries, provinces, or states. In the United States, these models rely on data reported by state health agencies. However, predictive disease and hospitalization dynamics at the state level are complicated by geographic variation in disease parameters. In addition it is difficult to make forecasts early in a pandemic due to minimal data. However, Bayesian approaches that allow models to be specified with informed prior information from areas that have already completed a disease curve can serve as prior estimates for areas that are beginning their curve. Here, a Bayesian non-linear regression (Weibull function) was used to forecast cumulative and active COVID-19 hospitalizations for South Dakota, USA. As expected, early forecasts were dominated by prior information, which was derived from New York City. Importantly, hospitalization trends also differed within South Dakota due to early peaks in an urban area, followed by later peaks in other rural areas of the state. Combining these trends led to altered forecasts with relevant policy implications.
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -123,7 +123,7 @@ Here, we modeled cumulative hospitalizations in an urban (Minnehaha) versus rura
 
 We obtained data on cumulative hospitalizations and active hospitalizations (number hospitalized on a given day) from the data dashboard for the South Dakota Department of Health (SD DOH) - \url{https://doh.sd.gov/news/Coronavirus.aspx\#SD}. Data for cumulative hospitalizations began on 2020-03-08 and were entered by hand into a .csv each day (SD DOH only reports totals for the current day, not a timeline). Data for active hospitalizations were not released until 2020-04-20, when 56 people were actively hospitalized. Beginning on that date, we also updated our .csv with active hospitalizations each day.
 
-When data collection began, most cases and hospitalizations were located in Minnehaha County, South Dakota. Therefore, during data collection, we noted hospitalizations in Minnehaha County versus the rest of South Dakota to capture any potential divergent trends under the assumption that the disease would spread more slowly across rural South Dakota. For these two areas, data are only available for cumulative hospitalizations, not for active hospitalizations. Minnehaha County has a population density of 619 people per \(km^2\), which is \textgreater50 times higher than the state average population density of 28 people per km\^{}2.\textsuperscript{5} Comparing these two areas allowed us to model COVID-19 hospitalizations in a rural and urban setting within the same state.
+When data collection began, most cases and hospitalizations were located in Minnehaha County, South Dakota. Therefore, during data collection, we noted hospitalizations in Minnehaha County versus the rest of South Dakota to capture any potential divergent trends under the assumption that the disease would spread more slowly across rural South Dakota. For these two areas, data are only available for cumulative hospitalizations, not for active hospitalizations. Minnehaha County has a population density of 619 people per \(km^2\), which is \textgreater50 times higher than the state average population density of 28 people per \(km^2\).\textsuperscript{5} Comparing these two areas allowed us to model COVID-19 hospitalizations in a rural and urban setting within the same state.
 
 \textbf{Models}
 
@@ -132,7 +132,7 @@ We estimated cumulative hospitalizations using a Bayesian model in which hospita
 \emph{Model 1}
 
 \[y_i \sim Poisson(\lambda_i)\]
-\[log\lambda_i = \alpha_i(1 - exp(-\frac{x_i}{\beta_i})^{\gamma_i})\]
+\[log\lambda_i = \alpha_i\left(1 - exp\left(-\frac{x_i}{\beta_i}\right)^{\gamma_i}\right)\]
 
 \[\alpha \sim \Gamma(64,8)\]
 \[\beta \sim \Gamma(2.9, 0.18)\]
@@ -162,11 +162,11 @@ To capture trends inside and outside of Minnehaha County, we fit the same model 
 
 With the above notation, \(y_i\) is the cumulative number of people hospitalized in each \emph{i} date (\(x_i\)), \(\alpha_j, \beta_j,\) and \(\gamma_j\) are the parameters for each \emph{j} group (Minnehaha County or the Rest of South Dakota), \(X_{minn}\) are the priors for each X parameter (\(\alpha\), \(\beta\), \(\gamma\)), \(X_{rest}\) are the priors for the difference in parameter values between Minnehaha and the Rest of South Dakota, and \(r_i\) is an indicator variable that is 0 if the data are in Minnehaha County and 1 otherwise.
 
-As before, prior values were chosen from a combination of prior information from NYC and from prior predictive simulation.\textsuperscript{16} To do this, we simulated 300 cumulative hospitalization curves with mean values for each parameter derived from the fit of the NYC model. Because NYC has both a higher absolute population size and a higher population density (by 10-fold) than South Dakota, we adjusted prior means and standard deviations so that the prior predictive distributions estimated hospitalizations to have a maximum that is slightly below the maximum of NYC, but with standard deviations that still include positive prior probability for some extreme prediction (e.g., 50,000 cumulative hospitalizations). (Figure \ref{prior_plots:plot}) shows the prior predictions for both models.
+As before, prior values were chosen from a combination of prior information from NYC and from prior predictive simulation.\textsuperscript{16} To do this, we simulated 300 cumulative hospitalization curves with mean values for each parameter derived from the fit of the NYC model. Because NYC has both a higher absolute population size and a higher population density (by 10-fold) than South Dakota, we adjusted prior means and standard deviations so that the prior predictive distributions estimated hospitalizations to have a maximum that is slightly below the maximum of NYC, but with standard deviations that still include positive prior probability for some extreme prediction (e.g., 50,000 cumulative hospitalizations). Figure \ref{prior:plot} shows the prior predictions for both models.
 
 \emph{Markov Chain Monte Carlo}
 
-Each model aforementioned was specified in R (version 3.6.3; R Core Team 2020) using the \emph{brms} package.\textsuperscript{17} Posterior sampling was performed using Hamiltonian Monte Carlo in \emph{rstan} (version 2.19.2,\textsuperscript{18}). We fit four chains, each with 2000 iterations, discarding the first 1000 iterations of each chain as warm-up. Warm-up samples are similar to burn-in sampling, but are used in this case as an optimizer for the HMC algorithm. Chains were checked for convergence using trace plots to assure overlap (\emph{Supplementary Information}), and by ensuring that the Gelman-Rubin convergence diagnostic (\(\hat{R}\)) was \textless{} 1.1.\textsuperscript{19}
+Each model aforementioned was specified in R (version 3.6.3; R Core Team 2020) using the \emph{brms} package.\textsuperscript{17} Posterior sampling was performed using Hamiltonian Monte Carlo in \emph{rstan} (version 2.19.2,\textsuperscript{18}). We fit four chains, each with 2000 iterations, discarding the first 1000 iterations of each chain as warm-up. Warm-up samples are similar to burn-in sampling, but are used in this case as an optimizer for the HMC algorithm. Chains were checked for convergence using trace plots to assure overlap (\emph{Supplementary Information}), and by ensuring that the Gelman-Rubin convergence diagnostic \(\hat{R}\) was \textless{} 1.1.\textsuperscript{19}
 
 \emph{Posterior prediction}
 
@@ -196,14 +196,10 @@ We then plotted these predictions against active hospitalizations reported by th
 
 We re-fit the model each day as data were released. To visualize how parameter values changed over time as data were added, we plotted posterior predictions and parameter values from model runs in 20 day intervals. Twenty days was arbitrarily chosen to allow for visual clarity in the plots.
 
-\emph{Data Availability}
-
-All data and code are available at \url{https://github.com/jswesner/covid_sd_ms}. These will be permanently archived via Zenodo upon acceptance of this manuscript.
-
 \hypertarget{results}{%
 \section{Results}\label{results}}
 
-At the state level, model 1 predicted a total of 762 hospitalizations (median) in South Dakota (90\% CrI: 715 - 816, Table 2). The inflection point was predicted at 28 days after the first hospitalization, suggesting that the peak rate of hospitalizations occurred around April 11, 2020 (Table 2). In contrast, the model with group-level effects separating trends in Minnehaha County clearly showed that hospitalizations trends differed in Minnehaha County verses the rest of South Dakota (Figure \ref{post_all:plot}). In Minnehaha County, the inflection point occurred around day 23 and revealed an asymptote of 316 hospitalizations (90\% CrI: 307-324) (Table 2). In the rest of South Dakota, the inflection point occurred \textasciitilde40 days later (day 62, Figure \ref{post_all:plot}). Similarly, the maximum cumulative hospitalizations in the rest of South Dakota are estimated at a median of \textasciitilde785, but with large uncertainty (90\% CrI: 673-929, Table 2).
+At the state level, model 1 predicted a total of 876 hospitalizations (median) in South Dakota (90\% CrI: 834-926, Table 2). The inflection point was predicted at 37 days after the first hospitalization, suggesting that the peak rate of hospitalizations occurred around April 20, 2020 (Table 2). In contrast, the model with group-level effects clearly showed that hospitalizations trends differed in Minnehaha County verses the rest of South Dakota (Figure \ref{post_all:plot}). In Minnehaha County, the inflection point occurred around day 23 and revealed an asymptote of 324 hospitalizations (90\% CrI: 317-330) (Table 2). In the rest of South Dakota, the inflection point occurred \textasciitilde40 days later (day 63, Figure \ref{post_all:plot}). Similarly, the maximum cumulative hospitalizations in the rest of South Dakota are estimated at a median of \textasciitilde867, but with large uncertainty (90\% CrI: 773-980, Table 2).
 
 As expected the uncertainty in predictions (Figure \ref{pred_overtime:plot}) improved over time as data were added to the model. The largest improvement appeared to occur during the model run on day 60, when all parameter values appeared to stabilize (\emph{Supplementary Information}). After this date, predictions for hospitalizations in Minnehaha County were stable, while predictions outside of Minnehaha County tended to underpredict future hospitalizations until the most recent model runs (Figure \ref{pred_overtime:plot}).
 
@@ -219,6 +215,11 @@ In addition to differences in maximum hospitalizations, the models predict diffe
 Though we did not attempt to predict COVID-19 infections in South Dakota, it may be possible to use our approach to do so by treating infections as a latent variable that leads to subsequent hospitalizations. Flaxman et al.~\textsuperscript{10} provide an example of this approach using COVID-19-related deaths rather than hospitalizations. By modeling the dynamics of deaths, they estimated a time-varying reproduction number (\(R_t\)), which was used to estimate the number of positive cases. Using deaths (or hospitalizations) to estimate infection dynamics may help to overcome limitations in testing capacity, which in turn lead to difficulty in linking publically-reported testing results to true population-level infection rates. This is particularly true in the United States, which has limited testing capacity and no centrally coordinated testing program.\textsuperscript{21}
 
 An advantage to the Bayesian approach is that we can use prior values of parameters in a model to fit a model with limited data. In our case, those parameters were conveniently available from New York City. However, if we were modeling a hospitalizaton curve that had no prior estimates, then we might derive priors from another epidemic that had similar disease characteristics or use prior predictive simulation to bound the model to reasonable prior predictions\textsuperscript{16}. In particular, because the prior distributions for individual parameters may not be known or are difficult to interpret without the consideration of the likelihood,\textsuperscript{22} it is important to assess the implications of prior choices using the prior predictive distribution (i.e.~simulating potential from the prior distrbutions alone)\textsuperscript{16} (Figure 1). In our model, data simulated from the prior helped to confirm that our model was specified in a way that included a wide range of hospitalization trajectories (Figure 1), but excluded extreme values that might have come from more diffuse priors, such as projecting asymptotes with hospitalizations that are higher than the population of South Dakota.
+
+\hypertarget{data-availability-statement}{%
+\section{Data Availability Statement}\label{data-availability-statement}}
+
+All data and code are available at \url{https://github.com/jswesner/covid_sd_ms}.\textsuperscript{23} These will be permanently archived via Zenodo upon acceptance of this manuscript.
 
 \hypertarget{acknowledgments}{%
 \section{Acknowledgments}\label{acknowledgments}}
@@ -295,6 +296,9 @@ We declare no conflicts of interest. We thank the South Dakota Department of Hea
 \leavevmode\hypertarget{ref-gelman_prior_2017}{}%
 22. Gelman A, Simpson D, Betancourt M. The Prior Can Often Only Be Understood in the Context of the Likelihood. \emph{Entropy}. 2017;19(10):555. doi:\href{https://doi.org/10.3390/e19100555}{10.3390/e19100555}
 
+\leavevmode\hypertarget{ref-wesner_jswesnercovid_sd_ms_2020}{}%
+23. Wesner J. Jswesner/covid\_sd\_ms. Published online July 2020. Accessed July 10, 2020. \url{https://github.com/jswesner/covid_sd_ms}
+
 \newpage
 
 \FloatBarrier
@@ -302,53 +306,56 @@ We declare no conflicts of interest. We thank the South Dakota Department of Hea
 \hypertarget{tables}{%
 \section{Tables}\label{tables}}
 
-\begin{table}[!h]
-
-\caption{\label{tab:unnamed-chunk-1}Posterior distributions from the New York City model and the prior distributions for the South Dakota models.}
-\centering
-\begin{tabular}[t]{lllrrrr}
+\begin{longtable}[]{@{}lllrrrr@{}}
+\caption{\label{tab:unnamed-chunk-1}Posterior distributions from the New York City model and prior distributions for the South Dakota models.}\tabularnewline
 \toprule
-param & model & post\_prior & mean & sd & shape & rate\\
+Parameter & Model & Post\_Prior & Mean & SD & Shape & Rate\tabularnewline
 \midrule
-\rowcolor{gray!6}  gamma\_rest & m2 & prior & 0.00 & 0.50 & NA & NA\\
-gamma & nyc & posterior & 1.26 & 0.01 & 23182.63 & 18340.23\\
-\rowcolor{gray!6}  gamma & m1 & prior & 1.21 & 0.47 & 6.64 & 5.48\\
-gamma & m2 & prior & 1.20 & 0.53 & 5.21 & 4.33\\
-\rowcolor{gray!6}  beta\_rest & m2 & prior & 0.00 & 5.00 & NA & NA\\
-\addlinespace
-beta & nyc & posterior & 17.65 & 0.07 & 66915.06 & 3791.95\\
-\rowcolor{gray!6}  beta & m1 & prior & 16.50 & 10.20 & 2.62 & 0.16\\
-beta & m2 & prior & 16.86 & 9.84 & 2.94 & 0.17\\
-\rowcolor{gray!6}  alpha\_rest & m2 & prior & 0.00 & 1.00 & NA & NA\\
-alpha & nyc & posterior & 8.58 & 0.00 & 12576784.38 & 1465706.21\\
-\addlinespace
-\rowcolor{gray!6}  alpha & m1 & prior & 7.98 & 0.98 & 65.83 & 8.25\\
-alpha & m2 & prior & 7.02 & 1.01 & 48.12 & 6.86\\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\begin{table}[!h]
-
-\caption{\label{tab:unnamed-chunk-2}Summary statistics of the asymptote (max), inflection point in days since the first case (inf), and slope at inflection (slope). Values for max and slope are exponentiated to place them on the scale of the response variable (cumulative hospitalizations. Summaries are derived from the posterior distributions of each parameter in the corresponding model.}
-\centering
-\begin{tabular}[t]{lllrrrrr}
+\endfirsthead
 \toprule
-Model & Group & Parameter & median & mean & sd & low90 & upper90\\
+Parameter & Model & Post\_Prior & Mean & SD & Shape & Rate\tabularnewline
 \midrule
-\rowcolor{gray!6}  Model 2 & Minnehaha & inf & 22.9 & 22.9 & 0.3 & 22.4 & 23.3\\
-Model 2 & Minnehaha & max & 324.1 & 324.2 & 4.1 & 317.5 & 330.9\\
-\rowcolor{gray!6}  Model 2 & Minnehaha & slope & 3.1 & 3.1 & 0.1 & 3.0 & 3.2\\
-Model 2 & Outside of Minnehaha & inf & 63.0 & 63.0 & 1.2 & 61.1 & 65.0\\
-\rowcolor{gray!6}  Model 2 & Outside of Minnehaha & max & 867.2 & 870.9 & 63.5 & 773.7 & 980.6\\
-\addlinespace
-Model 2 & Outside of Minnehaha & slope & 3.1 & 3.1 & 0.1 & 3.0 & 3.2\\
-\rowcolor{gray!6}  Model 1 & South Dakota & inf & 37.3 & 37.3 & 0.3 & 36.8 & 37.8\\
-Model 1 & South Dakota & max & 876.6 & 878.0 & 28.3 & 833.8 & 926.1\\
-\rowcolor{gray!6}  Model 1 & South Dakota & slope & 2.8 & 2.8 & 0.1 & 2.7 & 2.9\\
+\endhead
+\(\alpha\) & nyc & posterior & 8.58 & 0.00 & 12576784.38 & 1465706.21\tabularnewline
+\(\alpha\) & m1 & prior & 7.98 & 0.98 & 65.83 & 8.25\tabularnewline
+\(\alpha\) & m2 & prior & 7.02 & 1.01 & 48.12 & 6.86\tabularnewline
+\(\alpha_{rest}\) & m2 & prior & 0.00 & 1.00 & NA & NA\tabularnewline
+\(\beta\) & nyc & posterior & 17.65 & 0.07 & 66915.06 & 3791.95\tabularnewline
+\(\beta\) & m1 & prior & 16.50 & 10.20 & 2.62 & 0.16\tabularnewline
+\(\beta\) & m2 & prior & 16.86 & 9.84 & 2.94 & 0.17\tabularnewline
+\(\beta_{rest}\) & m2 & prior & 0.00 & 5.00 & NA & NA\tabularnewline
+\(\gamma\) & nyc & posterior & 1.26 & 0.01 & 23182.63 & 18340.23\tabularnewline
+\(\gamma\) & m1 & prior & 1.21 & 0.47 & 6.64 & 5.48\tabularnewline
+\(\gamma\) & m2 & prior & 1.20 & 0.53 & 5.21 & 4.33\tabularnewline
+\(\gamma_{rest}\) & m2 & prior & 0.00 & 0.50 & NA & NA\tabularnewline
 \bottomrule
-\end{tabular}
-\end{table}
+\end{longtable}
+
+\newpage
+
+\FloatBarrier
+
+\begin{longtable}[]{@{}lllrrrrr@{}}
+\caption{\label{tab:unnamed-chunk-2}Summary statistics of model parameters. Asymptotes are exponentiated to place them on the scale of the response variable (cumulative hospitalizations). Summaries are derived from the posterior distributions of each parameter in the corresponding model.}\tabularnewline
+\toprule
+Model & Group & Parameter & Median & Mean & SD & Low90 & Upper90\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+Model & Group & Parameter & Median & Mean & SD & Low90 & Upper90\tabularnewline
+\midrule
+\endhead
+Model 1 & South Dakota & \(\beta\) & 37.4 & 37.3 & 0.3 & 36.8 & 37.9\tabularnewline
+Model 1 & South Dakota & exp(\(\alpha\)) & 880.6 & 882.4 & 27.8 & 840.8 & 930.8\tabularnewline
+Model 1 & South Dakota & \(\gamma\) & 1.0 & 1.0 & 0.0 & 1.0 & 1.1\tabularnewline
+Model 2 & Minnehaha & \(\beta_{minn}\) & 22.9 & 22.9 & 0.3 & 22.4 & 23.3\tabularnewline
+Model 2 & Minnehaha & exp(\(\alpha_{minn}\)) & 324.7 & 324.8 & 4.1 & 318.2 & 331.8\tabularnewline
+Model 2 & Minnehaha & \(\gamma_{minn}\) & 1.1 & 1.1 & 0.0 & 1.1 & 1.2\tabularnewline
+Model 2 & Outside of Minnehaha & \(\beta_{minn} + \beta_{rest}\) & 62.9 & 63.0 & 1.1 & 61.1 & 64.9\tabularnewline
+Model 2 & Outside of Minnehaha & exp(\(\alpha_{minn} + \alpha_{rest}\)) & 866.2 & 870.0 & 61.7 & 775.7 & 976.3\tabularnewline
+Model 2 & Outside of Minnehaha & \(\gamma_{minn} + \gamma_{rest}\) & 1.1 & 1.1 & 0.0 & 1.1 & 1.2\tabularnewline
+\bottomrule
+\end{longtable}
 
 \newpage
 
@@ -360,7 +367,7 @@ Model 1 & South Dakota & max & 876.6 & 878.0 & 28.3 & 833.8 & 926.1\\
 \begin{figure}
 \centering
 \includegraphics{manuscript_files/figure-latex/plot-nyc-1.pdf}
-\caption{\label{fig:plot-nyc}Left: Model of New York City's hospitalization curve. Data are divided by 10 to reflect the relative population sizes in South Dakota versus New York city. Three-hundred simulations of cumulative hospitalizations from the prior predictive distribution of each model. Priors for Model 1 were derived from the fit of NYC's hospitalization curve. Priors for Model 2 were similar to those of Model 1, but had a reduced prediction of cumulative hospitalizations to account for the smaller populations of each group (Minnehaha County vs Outside Minnehaha County) relative to the whole state population.\label{prior:plot}}
+\caption{\label{fig:plot-nyc}Left: Model of New York City's hospitalization curve. Data are divided by 10 to reflect the relative population sizes in South Dakota versus New York city. Right: Three-hundred simulations of cumulative hospitalizations from the prior predictive distribution of each model for South Dakota. Priors for Model 1 were derived from the fit of NYC's hospitalization curve. Priors for Model 2 were similar to those of Model 1, but had a reduced prediction of cumulative hospitalizations to account for the smaller populations of each group (Minnehaha County vs Outside Minnehaha County) relative to the whole state population.\label{prior:plot}}
 \end{figure}
 
 \begin{figure}

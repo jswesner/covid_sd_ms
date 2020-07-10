@@ -179,7 +179,9 @@ data_b <- plot_data_state <- cum_hosp_state %>%
 data_ab <- bind_rows(plot_data_group, plot_data_state) %>% 
   expand_grid(day = c(20, 40, 60, 80, 100, 120)) %>% 
   mutate(data = case_when(date_num <= day ~ "fit",
-                           TRUE ~ "future"))
+                           TRUE ~ "future")) %>% 
+  mutate(group = case_when(grepl("Rest", group) ~ "Outside of Minnehaha",
+                           TRUE ~ group))
 
 
 
@@ -189,9 +191,9 @@ pred_overtime <- posts_bind %>%
   geom_ribbon(aes(ymin = lower, ymax = upper), alpha = 0.2) + 
   facet_grid(day ~ group) +
   coord_cartesian(ylim = c(0, 2000)) +
-  geom_point(data = data_ab, aes(y = cum_hosp, fill = data, size = data), shape = 21, color = "black") +
-  scale_size_manual(values = c(1.5, 0.5)) +
-  scale_fill_brewer(type = "qual", palette = 5) +
+  geom_point(data = data_ab, aes(y = cum_hosp, fill = data, size = data), shape = 16, alpha = 0.3) +
+  scale_size_manual(values = c(2, .5)) +
+  # scale_fill_brewer(type = "qual", palette = 5) +
   theme_bw() +
   labs(y = "Cumulative Hospitalizations",
        x = "")

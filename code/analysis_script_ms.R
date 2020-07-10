@@ -95,7 +95,7 @@ state_priors <- tibble(ult = rgamma(300, 64, 8),
   mutate(fit = exp(ult*(1 - exp(-(date_num/omega)^theta))),
          pred = rpois(nrow(.), fit),
          group = "All of South Dakota",
-         model = "Model 1")
+         model = "Model 1 (State Level)")
 
 
 group_priors <- tibble(ult = rgamma(300, 64, 8),
@@ -113,7 +113,7 @@ group_priors <- tibble(ult = rgamma(300, 64, 8),
   gather(key, pred, c(y_minn_pred:y_rest_pred)) %>% 
   mutate(group = case_when(grepl("minn", key) ~ "Minnehaha County",
                            TRUE ~ "Outside of Minnehaha"),
-         model = "Model 2")
+         model = "Model 2 (Two sub-populations)")
 
 
 plot_priors <- state_priors %>% select(pred, iter, group, date_num,model) %>% 
@@ -124,7 +124,7 @@ pop_correct = 884000/8400000
 
 prior_predictive <- plot_priors %>% 
   ggplot(aes(x = date_num, y = pred, color = group)) +
-  geom_line(aes(group = interaction(group,iter)), alpha = 0.2) +
+  geom_line(aes(group = interaction(group,iter)), size = 0.2, alpha = 0.5) +
   # geom_point(data = nyc_hosp, aes(y = cum_hosp*pop_correct), color = "black", shape = 21) +
   scale_y_log10() +
   facet_wrap(~ model) +
@@ -134,6 +134,7 @@ prior_predictive <- plot_priors %>%
   theme_classic() + 
   coord_cartesian(ylim = c(1, 100000)) +
   scale_color_brewer(type = "qual", palette = 8) +
+  # scale_color_manual(values = c("black", "yellow", "purple")) +
   # scale_color_manual(values = c("black", "red", "blue")) +
   guides(color = guide_legend(override.aes = list(alpha = 1))) +
   theme(legend.title = element_blank()) +
@@ -160,6 +161,12 @@ nycpostprior <- tibble(param = c("alpha", "beta", "gamma", "alpha_rest", "beta_r
                          0, 0, 0),
        sd_m2_prior = c(sd(rgamma(1000, 49,7)), sd(rgamma(1000, 2.9, 0.17)), sd(rgamma(1000, 5.8, 4.8)),
                        1, 5, 0.5))
+
+
+greeks=c(alpha='\u03b1', tau='\u03c4', sigma='\u03c3',
+         beta='\u03b2',
+         gamma='\u03b3')
+
 nycpostprior_table <- nycpostprior %>% gather(key, value, -param) %>% 
   separate(key, c("measure", "model", "post_prior")) %>% 
   pivot_wider(names_from = measure, values_from = value) %>% 
@@ -169,7 +176,14 @@ nycpostprior_table <- nycpostprior %>% gather(key, value, -param) %>%
   arrange(desc(param)) %>% 
   drop_na() %>% 
   mutate(shape = na_if(shape, 0),
-         rate = na_if(rate, 0))
+         rate = na_if(rate, 0)) %>% 
+  rename(Parameter = param,
+         Model = model,
+         Post_Prior = post_prior,
+         Mean = mean,
+         SD = sd,
+         Shape = shape,
+         Rate = rate)
 
 saveRDS(nycpostprior_table, file = here("plots/nycpostprior_table.rds"))
 # kable(nycpostprior_table, "latex", caption = "Posterior distributions from the New York City model and the prior distributions for the South Dakota models.", booktabs = T) %>%
@@ -229,8 +243,8 @@ saveRDS(fit_weib_group_f, file = here::here("outputs/fit_weib_group_f.rds"))
 ## ----extract posteriors, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE---------
 
 #new dates to condition on
-newstatefit <- tibble(date_num = seq(0, max(cum_hosp$date_num, by = 1)))
-newstatepred <- tibble(date_num = seq(max(cum_hosp$date_num, 200, by = 1)))
+newstatefit <- tibble(date_num = seq(0, max(cum_hosp$date_num), by = 1))
+newstatepred <- tibble(date_num = seq(max(cum_hosp$date_num), 200, by = 1))
 
 #extract posteriors distributions
 #model 1
@@ -250,7 +264,7 @@ pred_state <- predict(fit_weib_state, newdata = newstatepred, probs = c(0.025, 0
 
 
 #model 2
-newminnfit <- tibble(date_num = seq(0, max(cum_hosp$date_num, by = 1)),
+newminnfit <- tibble(date_num = seq(0, max(cum_hosp$date_num)-12, by = 1),
                   group = "Minnehaha County")
 
 fit_minn <- fitted(fit_weib_group_f, newdata = newminnfit, probs = c(0.025, 0.25, 0.75, 0.975)) %>% as_tibble() %>% clean_names() %>% 
@@ -261,7 +275,7 @@ fit_minn <- fitted(fit_weib_group_f, newdata = newminnfit, probs = c(0.025, 0.25
          model = "Model 2")
 
 
-newminnpred <- tibble(date_num = seq(max(cum_hosp$date_num), 200, by = 1),
+newminnpred <- tibble(date_num = seq(max(cum_hosp$date_num)-12, 200, by = 1),
                                     group = "Minnehaha County")
 
 pred_minn <- predict(fit_weib_group_f, newdata = newminnpred, probs = c(0.025, 0.25, 0.75, 0.975)) %>% as_tibble() %>% clean_names() %>% 
@@ -272,7 +286,7 @@ pred_minn <- predict(fit_weib_group_f, newdata = newminnpred, probs = c(0.025, 0
          model = "Model 2")
 
 
-newrestfit <- tibble(date_num = seq(0, max(cum_hosp$date_num, by = 1)),
+newrestfit <- tibble(date_num = seq(0, max(cum_hosp$date_num), by = 1),
                   group = "Rest of South Dakota")
 
 fit_rest <- fitted(fit_weib_group_f, newdata = newrestfit, probs = c(0.025, 0.25, 0.75, 0.975)) %>% as_tibble() %>% clean_names() %>% 
@@ -379,11 +393,12 @@ post_all_plot <- post_priors  %>%
   geom_ribbon(alpha = 0.2, aes(ymin = q25, ymax = q75, fill = group)) + 
   facet_grid(model ~ ., scales = "free") +
   geom_point(data = plot_data_all, aes(x = date, y = cum_hosp, shape = group), size = 0.8) +
-  coord_cartesian(ylim = c(1, 800),
-                  xlim = c(min(cum_hosp$date), as_date("2020-08-01"))) +
+  coord_cartesian(ylim = c(1, 1000),
+                  xlim = c(min(cum_hosp$date), as_date("2020-09-01"))) +
   scale_color_brewer(type = "qual") +
   scale_fill_brewer(type = "qual") +
   theme_bw() +
+  scale_x_date(date_breaks = "1 month", minor_breaks = "1 week", date_labels = "%b") +
   # scale_y_log10() +
   labs(y = "Cumulative Hospitalizations",
        x = "") +
@@ -402,16 +417,16 @@ postgroup <- posterior_samples(fit_weib_group_f) %>% tibble() %>% clean_names()
 
 state_table <- poststate %>% tibble() %>% mutate(iter = 1:nrow(.)) %>% 
   mutate(sd_max = exp(b_ult_intercept),
-         sd_slope = exp(b_theta_intercept),
+         sd_slope = b_theta_intercept,
          sd_inf = b_omega_intercept) %>%
   select(iter, sd_max, sd_inf, sd_slope) %>% 
   gather(key, value, -iter) %>% 
   group_by(key) %>% 
-  summarize(median = round(median(value),1),
-            mean = round(mean(value),1),
-            sd = round(sd(value),1),
-            low90 = round(quantile(value, probs = 0.05),1),
-            upper90 = round(quantile(value, probs = 0.95),1)) %>% 
+  summarize(Median = round(median(value),1),
+            Mean = round(mean(value),1),
+            SD = round(sd(value),1),
+            Low90 = round(quantile(value, probs = 0.05),1),
+            Upper90 = round(quantile(value, probs = 0.95),1)) %>% 
   ungroup() %>% 
   filter(grepl("sd_", key) & !grepl("r_group", key)) %>% 
   mutate(Model = "Model 1",
@@ -424,18 +439,18 @@ state_table <- poststate %>% tibble() %>% mutate(iter = 1:nrow(.)) %>%
 group_table <- postgroup %>% tibble() %>% mutate(iter = 1:nrow(.)) %>% 
   mutate(minn_max = exp(b_ult_intercept),
          minn_inf = b_omega_intercept,
-         minn_slope = exp(b_theta_intercept),
+         minn_slope = b_theta_intercept,
          rest_max = exp(b_ult_intercept + b_ult_group_restof_south_dakota),
-         rest_slope = exp(b_theta_intercept + b_theta_group_restof_south_dakota),
+         rest_slope = b_theta_intercept + b_theta_group_restof_south_dakota,
          rest_inf = b_omega_intercept + b_omega_group_restof_south_dakota) %>%
   select(minn_max, minn_inf, minn_slope, rest_max, rest_inf, rest_slope, iter) %>% 
   gather(key, value, -iter) %>% 
   group_by(key) %>% 
-  summarize(median = round(median(value),1),
-            mean = round(mean(value),1),
-            sd = round(sd(value),1),
-            low90 = round(quantile(value, probs = 0.05),1),
-            upper90 = round(quantile(value, probs = 0.95),1)) %>% 
+  summarize(Median = round(median(value),1),
+            Mean = round(mean(value),1),
+            SD = round(sd(value),1),
+            Low90 = round(quantile(value, probs = 0.05),1),
+            Upper90 = round(quantile(value, probs = 0.95),1)) %>% 
   ungroup() %>% 
   filter(grepl("minn_", key) | grepl("rest_", key) & !grepl("r_group", key)) %>% 
   mutate(Model = "Model 2",
@@ -444,7 +459,7 @@ group_table <- postgroup %>% tibble() %>% mutate(iter = 1:nrow(.)) %>%
   select(Model, Group, Parameter, everything(),-key)
 
 
-table_all <- bind_rows(group_table, state_table) %>% mutate(Model = fct_relevel(Model, "Model 2"))
+table_all <- bind_rows(state_table, group_table) 
 saveRDS(table_all, file = "plots/table_all.rds")
 
 # kable(table_all, "latex", caption = "Summary statistics of the asymptote (max), inflection point in days since the first case (inf), and slope at inflection (slope). Values for max and slope are exponentiated to place them on the scale of the response variable (cumulative hospitalizations. Summaries are derived from the posterior distributions of each parameter in the corresponding model.", booktabs = T) %>%
@@ -682,9 +697,12 @@ postgroup_g <- postgroup %>% mutate(model = "Model 2",
 
 allpost <- bind_rows(poststate_g, postgroup_g) %>% 
   mutate(prior_post = fct_relevel(prior_post, "Prior"),
-         param = case_when(param == "ult" ~ "max",
-                           param == "theta" ~ "slope",
-                           param == "omega" ~ "inflection",
+         param = case_when(param == "ult" ~ "alpha",
+                           param == "theta" ~ "beta",
+                           param == "omega" ~ "gamma",
+                           param == "Beta1" ~ "alpha_rest",
+                           param == "Beta2" ~ "beta_rest",
+                           param == "Beta3" ~ "gamma_rest",
                            TRUE ~ param),
          param = fct_relevel(param, "max", "slope", "inflection"))
 
