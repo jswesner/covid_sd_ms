@@ -1,0 +1,9 @@
+---
+output:
+  word_document: default
+  html_document: default
+---
+$$yfit_i^{(k)} = exp\left(\alpha_i^{(k)}\left(1 - exp\left(-\frac{x_i}{\beta_i^{(k)}}\right)^{\gamma_i^{(k)}}\right)\right)$$
+where *k* is the $k^{th}$ iteration from the posterior distribution and *i* is the $i^{th}$ date. Posterior predicted values were estimated by drawing each $ypred_i^{(k)}$ from the Poisson distribution:
+
+$$y_{pred}^{(k)} = N(X_{new}\beta^{(k)}, \sigma^{(k)})$$

@@ -1,0 +1,62 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+```{r, results='asis',message=FALSE,warning=FALSE}
+library(knitr)
+library(xtable)
+
+
+# dt <- data.frame(Parâmetros=parameter,VV=truevalue,Clear=rep("NA",8),Média=cbind(colMeans(dt1)),EQM=eqmest,Clear=rep("NA",8),Média=cbind(colMeans(dt2)),EQM=eqmest2,Clear=rep("NA",8),Média=cbind(colMeans(dt3)),EQM=eqmest3)
+
+library(tidyverse)
+library(kableExtra)
+library(here)
+
+parameter <- c("$\\gamma_{1}$","$\\gamma_{2}$", "$\\gamma_{3}$", "$\\beta_{1}$", "$\\beta_{2}$","$\\beta_{3}$","$\\phi$","$\\rho$",
+               NA,NA,NA,NA)
+
+nycpostprior_table <- readRDS(file = "plots/nycpostprior_table.rds") %>% 
+  mutate(Parameter = case_when(Parameter == "gamma" ~ "$\\gamma$",
+                         Parameter == "beta" ~ "$\\beta$",
+                         Parameter == "alpha" ~ "$\\alpha$",
+                         Parameter == "gamma_rest" ~ "$\\gamma_{rest}$",
+                         Parameter == "beta_rest" ~ "$\\beta_{rest}$",
+                         Parameter == "alpha_rest" ~ "$\\alpha_{rest}$"),
+         Model = fct_relevel(Model, "nyc","m1")) %>% 
+  arrange(Parameter, Model)
+
+kable(nycpostprior_table, format = "pandoc") %>%
+kable_styling(latex_options = c("striped", "hold_position"))
+
+
+
+# print(xtable(dt,digits=c(5,5,5,5,5,5,5,5,5,5,5,5), caption = " ",align = rep("c",12)), 
+#       caption.placement = "top", include.rownames = FALSE,include.colnames = FALSE,
+#       type = "latex", 
+#       sanitize.text.function = function(x) {x},add.to.row = list(
+#         pos = list(0),
+#         command = c(
+#           "&         &&\\multicolumn{2}{c}{n=50}&&\\multicolumn{2}{c}{n=200}&&\\multicolumn{2}{c}{n=1000} \\\\
+#           \\cline{4-5} \\cline{7-8} \\cline{10-11}
+#           Parâmetros & VV & Clear & Média & EQM& Clear & Média & EQM& Clear & Média & EQM\\\\"
+# )))
+
+
+table_all <- readRDS(file = here::here("plots/table_all.rds")) %>% 
+  mutate(temp_param = paste(Model, Group, Parameter)) %>% 
+  mutate(Parameter = case_when(temp_param == "Model 1 South Dakota inf" ~ "$\\beta$",
+                         temp_param == "Model 1 South Dakota max" ~ "exp($\\alpha$)",
+                         temp_param == "Model 1 South Dakota slope" ~ "exp($\\gamma$)",
+                         temp_param == "Model 2 Outside of Minnehaha slope"  ~ "exp($\\gamma_{minn} + \\gamma_{rest}$)",
+                         temp_param == "Model 2 Outside of Minnehaha inf" ~ "$\\beta_{minn} + \\beta_{rest}$",
+                        temp_param == "Model 2 Outside of Minnehaha max"  ~ "exp($\\alpha_{minn} + \\alpha_{rest}$)",
+                        temp_param == "Model 2 Minnehaha slope" ~ "exp($\\gamma_{minn}$",
+                         temp_param == "Model 2 Minnehaha inf"  ~ "$\\beta_{minn}$",
+                        temp_param == "Model 2 Minnehaha max"  ~ "exp($\\alpha_{minn}$)")) %>% 
+  select(-temp_param)
+  
+  
+kable(table_all, format = "pandoc") %>%
+kable_styling(latex_options = c("striped", "hold_position"))
